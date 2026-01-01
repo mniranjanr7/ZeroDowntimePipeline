@@ -24,7 +24,7 @@ jobs:
 
       - name: build local image
         run: |
-          docker build -t --no-cache 'nginx:${{steps.version.outputs.image_version}}' .
+          docker build --no-cache -t 'nginx:${{steps.version.outputs.image_version}}' .
 
       - name: Docker push to repository
         uses: docker/build-push-action@v5
