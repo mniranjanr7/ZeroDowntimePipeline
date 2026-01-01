@@ -32,3 +32,14 @@ jobs:
           context: .
           push: true
           tags: ${{secrets.DOCKER_USERNAME}}/nodeapp:${{ steps.version.outputs.image_version }}
+
+      # --- Trivy image scan (fails on High/Critical) ---
+      - name: Trivy scan (image)
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{secrets.DOCKER_USERNAME}}/nodeapp:${{ steps.version.outputs.image_version }}
+          vuln-type: "os,library"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "HIGH,CRITICAL"
