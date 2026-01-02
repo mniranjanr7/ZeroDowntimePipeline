@@ -48,8 +48,7 @@ jobs:
           file: ./Dockerfile
           push: false
           load: true #  makes image available to 'docker images'
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_DETAIL }}
 
       # check if the image is available locally
       - name: list the image locally
@@ -59,7 +58,7 @@ jobs:
       - name: Trivy scan (image)
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: ${{ steps.version.outputs.image_version }}
+          image-ref: ${{ env.IMAGE_DETAIL }}
           vuln-type: "os,library"
           format: "table"
           exit-code: "1"
@@ -86,7 +85,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_DETAIL }}
             ${{ env.IMAGE_NAME }}:latest
 
   deploy-k8s-manifests:
