@@ -4,6 +4,7 @@ on:
 jobs:
   inputs:
     runs-on: ubuntu-latest
+    
     outputs:
       image_version: ${{steps.version.outputs.image_details}}
     steps:
