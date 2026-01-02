@@ -81,7 +81,7 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_DETAIL }}
-            
+
       - name: image version
         id: version
         shell: bash
@@ -118,6 +118,7 @@ jobs:
 
       - name: Update the image tag in the k8s manifests
         run: |
+          export IMAGE_DETAIL="${{ env.image_tag_details }}"
           envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
 
       - name: apply the k8s manifests
