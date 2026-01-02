@@ -21,7 +21,7 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
-      image_detail: ${{ steps.version.outputs.image_detail }}
+      image_detail: ${{ env.IMAGE_DETAIL }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -90,23 +90,25 @@ jobs:
   deploy-k8s-manifests:
     needs: build-docker-image
     runs-on: ubuntu-latest
+    env:
+      image_tag_details: "${{ needs.build-docker-image.outputs.image_detail }}"
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
 
       - name: debug needs output
-        run: echo "Needs output -> ${{ needs.build-docker-image.outputs.image_detail }}"
+        run: echo "Needs output -> ${{ env.image_tag_details }}"
 
       - name: set the env variables
         run: |
-          export IMAGE_TAG="${{ needs.build-docker-image.outputs.image_detail }}"
+          export IMAGE_TAG="${{ env.image_tag_details }}"
 
           if [ -z "$IMAGE_TAG" ]; then
             echo "The image tag is not set "
             exit 1
           fi
 
-          echo "The image_tag is $IMAGE_TAG"
+          echo "The image_tag is ${IMAGE_TAG}"
 
       - name: setup kubectl
         uses: azure/setup-kubectl@v3
