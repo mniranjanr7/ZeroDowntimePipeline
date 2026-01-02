@@ -87,11 +87,11 @@ jobs:
         id: version
         shell: bash
         run: |
-          echo "image_details=mniranjanr7/nodeapp:98570q943504398" >> "$GITHUB_OUTPUT"
+          echo "image_details=mniranjanr7/nodeapp" >> "$GITHUB_OUTPUT"
 
       - name: output GITHUB_OUTPUT
         run: |
-          cat $GITHUB_OUTPUT
+          echo ${{steps.version.outputs.image_details}}
 
   deploy-k8s-manifests:
     needs: build-docker-image
