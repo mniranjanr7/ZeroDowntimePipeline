@@ -10,7 +10,7 @@ concurrency:
 permissions:
   contents: read
   packages: write
-  security-events: write # for SARIF upload
+  security-events: write # for SARIF uploads
 
 env:
   IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/nodeapp
