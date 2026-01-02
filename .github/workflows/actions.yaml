@@ -28,7 +28,7 @@ jobs:
 
       - name: image version
         id: version
-        run: echo "image_details=mniranjanr7" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=$IMAGE_DETAIL" >> "$GITHUB_OUTPUT"
 
       # - name: docker build setup
       #   uses: docker/setup-buildx-action@v3
