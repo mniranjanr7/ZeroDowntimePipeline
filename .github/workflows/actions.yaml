@@ -13,7 +13,7 @@ permissions:
   security-events: write # for SARIF uploads
 
 env:
-  IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/nodeapp
+  IMAGE_NAME: nodeapp
   IMAGE_TAG: ${{github.sha}}
   IMAGE_DETAIL: mniranjanr7/nodeapp:${{ github.sha }}
 
@@ -87,7 +87,6 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_DETAIL }}
-            ${{ env.IMAGE_NAME }}:latest
 
   deploy-k8s-manifests:
     needs: build-docker-image
