@@ -2,7 +2,7 @@ name: build-nginx-image
 on:
   workflow_dispatch:
 jobs:
-  build-docker-imnage:
+  build-docker-image:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repository
@@ -43,8 +43,21 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
           severity: "HIGH,CRITICAL"
+  deploy-k8s-manifests:
+    needs: build-docker-image
+    steps:
+      - name: setup kubectl
+        uses: azure/setup-kubectl@v3
 
-      - name: deploy k8s manifests
+      - name: connect to Kubernetes
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{secrets.KUBECONFIG_DATA}}
+
+      - name: apply the k8s manifests
         run: |
           kubectl apply -f k8s/
+
+
 
