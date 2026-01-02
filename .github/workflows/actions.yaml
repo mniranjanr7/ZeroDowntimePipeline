@@ -85,7 +85,7 @@ jobs:
       - name: image version
         id: version
         shell: bash
-        run: echo "image_details=mniranjanr7nodeapp" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=mniranjanr7" >> "$GITHUB_OUTPUT"
 
       - name: output GITHUB_OUTPUT
         run: echo ${{steps.version.outputs.image_details}}
