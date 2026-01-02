@@ -89,6 +89,10 @@ jobs:
         run: |
           echo "image_details=mniranjanr7/nodeapp:98570q943504398" >> "$GITHUB_OUTPUT"
 
+      - name: output GITHUB_OUTPUT
+        run: |
+          cat $GITHUB_OUTPUT
+
   deploy-k8s-manifests:
     needs: build-docker-image
     runs-on: ubuntu-latest
