@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: debug needs output
-        run: echo "Needs output -> ${{ needs.build-docker-image.outputs.image_detail }}
+        run: echo "Needs output -> ${{ needs.build-docker-image.outputs.image_detail }}"
 
       - name: set the env variables
         run: |
