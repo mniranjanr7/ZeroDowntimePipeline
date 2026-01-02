@@ -21,7 +21,7 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
-      image_detail: ${{ env.IMAGE_DETAIL }}
+      image_full_path: ${{ env.IMAGE_DETAIL }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -91,24 +91,22 @@ jobs:
     needs: build-docker-image
     runs-on: ubuntu-latest
     env:
-      image_tag_details: "${{ needs.build-docker-image.outputs.image_detail }}"
+      image_tag_details: ${{ needs.build-docker-image.outputs.image_full_path }}
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
 
       - name: debug needs output
-        run: echo "Needs output -> ${{ env.image_tag_details }}"
+        run: echo "Needs output -> ${image_tag_details}"
 
       - name: set the env variables
         run: |
-          export IMAGE_TAG="${{ env.image_tag_details }}"
-
-          if [ -z "$IMAGE_TAG" ]; then
+          if [ -z "$image_tag_details" ]; then
             echo "The image tag is not set "
             exit 1
           fi
 
-          echo "The image_tag is ${IMAGE_TAG}"
+          echo "The image_tag is ${image_tag_details}"
 
       - name: setup kubectl
         uses: azure/setup-kubectl@v3
