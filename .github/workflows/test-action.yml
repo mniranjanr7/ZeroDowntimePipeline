@@ -1,0 +1,26 @@
+name: output
+on:
+  workflow_dispatch:
+jobs:
+  inputs:
+    runs-on: ubuntu-latest
+    outputs:
+      image_version: ${{steps.version.outputs.image_details}}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - name: version
+        id: version
+        run: |
+          echo "image_details=latest" >> "$GITHUB_OUTPUT"
+  output:
+    needs: inputs
+    runs-on: ubuntu-latest
+    env:
+      image-versions: ${{ needs.inputs.outputs.image_version }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - name: print the image-version from inputs
+        run: |
+          echo $image-versions
