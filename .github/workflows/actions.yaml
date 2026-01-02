@@ -101,7 +101,7 @@ jobs:
           echo "Needs output -> ${{ env.image_tag_details}}"
           echo "os env $image_tag_details"
           echo "image_tag_details -> ${{ needs.build-docker-image.outputs.image_full_path }}"
-          test -n "${{ env.image_tag_details }}" || { echo "image_tag_details not set"; exit 1 ; }
+          test -n "${image_tag_details}" || { echo "image_tag_details not set"; exit 1 ; }
 
       # - name: setup kubectl
       #   uses: azure/setup-kubectl@v3
