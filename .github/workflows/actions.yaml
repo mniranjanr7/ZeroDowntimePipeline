@@ -43,8 +43,10 @@ jobs:
           exit-code: "1"
           ignore-unfixed: true
           severity: "HIGH,CRITICAL"
+          
   deploy-k8s-manifests:
     needs: build-docker-image
+    runs-on: ubuntu-latest
     steps:
       - name: setup kubectl
         uses: azure/setup-kubectl@v3
