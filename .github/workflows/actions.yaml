@@ -21,7 +21,7 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
-      image_full_path: ${{ env.IMAGE_DETAIL }}
+      image_full_path: ${{ steps.version.outputs.image_detail }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
