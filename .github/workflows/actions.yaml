@@ -16,7 +16,6 @@ env:
   IMAGE_NAME: nodeapp
   IMAGE_TAG: ${{github.sha}}
   IMAGE_DETAIL: "mniranjanr7/nodeapp:${{ github.sha }}"
-  test_image: latest-tag
 
 jobs:
   build-docker-image:
@@ -86,12 +85,10 @@ jobs:
       - name: image version
         id: version
         shell: bash
-        run: |
-          echo "image_details=mniranjanr7nodeapp" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=mniranjanr7nodeapp" >> "$GITHUB_OUTPUT"
 
       - name: output GITHUB_OUTPUT
-        run: |
-          echo ${{steps.version.outputs.image_details}}
+        run: echo ${{steps.version.outputs.image_details}}
 
   deploy-k8s-manifests:
     needs: build-docker-image
