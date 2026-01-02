@@ -21,14 +21,14 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
-      image_full_path: ${{ env.IMAGE_DETAIL }}
+      imagefullpath: ${{ steps.version.outputs.image_details }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
 
       - name: image version
         id: version
-        run: echo "image_details=$IMAGE_DETAIL" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=mniranjanr7/nodeapp:${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
       - name: docker build setup
         uses: docker/setup-buildx-action@v3
@@ -90,7 +90,7 @@ jobs:
     needs: build-docker-image
     runs-on: ubuntu-latest
     env:
-      image_tag_details: ${{ needs.build-docker-image.outputs.image_full_path }}
+      image_tag_details: ${{ needs.build-docker-image.outputs.imagefullpath }}
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
