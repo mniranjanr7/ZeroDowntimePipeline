@@ -39,15 +39,15 @@ jobs:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
 
-      # build image locally but not push until the scanning is success
-      - name: Docker push to repository
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          load: true #  makes image available to 'docker images'
-          tags: ${{ env.IMAGE_DETAIL }}
+      # # build image locally but not push until the scanning is success
+      # - name: Docker push to repository
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: false
+      #     load: true #  makes image available to 'docker images'
+      #     tags: ${{ env.IMAGE_DETAIL }}
 
       # # check if the image is available locally
       # - name: list the image locally
@@ -101,7 +101,7 @@ jobs:
           echo "Needs output -> ${{ env.image_tag_details}}"
           echo "os env $image_tag_details"
           echo "image_tag_details -> ${{ needs.build-docker-image.outputs.image_full_path }}"
-          test -n "${{ env.image_tag_details }}" || { echo "image_tag_details not set"; }
+          test -n "${{ env.image_tag_details }}" || { echo "image_tag_details not set"; exit 1 ; }
 
       # - name: setup kubectl
       #   uses: azure/setup-kubectl@v3
