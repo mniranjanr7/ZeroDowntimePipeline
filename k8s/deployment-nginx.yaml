@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: mniranjanr7/nodeapp:e7fab1863d83e607fbed2356a2eb7f0b41000da6
+          image: mniranjanr7/nodeapp:${IMAGE_TAG}
           ports:
             - containerPort: 80
               name: nginx-http

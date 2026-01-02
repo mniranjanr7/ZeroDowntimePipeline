@@ -15,10 +15,13 @@ permissions:
 env:
   IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/nodeapp
   IMAGE_TAG: ${{github.sha}}
+  IMAGE_DETAIL: ${{ secrets.DOCKER_USERNAME }}/nodeapp:${{ github.sha }}
 
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
+    outputs:
+      image_detail: ${{ steps.version.outputs.image_detail }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -29,17 +32,13 @@ jobs:
       - name: image version
         id: version
         run: |
-          echo "image_version=${{github.sha}}" >> "$GITHUB_OUTPUT"
+          echo "image_detail=${{ env.IMAGE_DETAIL }}" >> "$GITHUB_OUTPUT"
 
       - name: login to docker
         uses: docker/login-action@v3
         with:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
-
-      # - name: build local image
-      #   run: |
-      #     docker build --no-cache -t 'nginx:${{steps.version.outputs.image_version}}' .
 
       # build image locally but not push until the scanning is success
       - name: Docker push to repository
@@ -60,7 +59,7 @@ jobs:
       - name: Trivy scan (image)
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: ${{secrets.DOCKER_USERNAME}}/nodeapp:${{ steps.version.outputs.image_version }}
+          image-ref: ${{ steps.version.outputs.image_version }}
           vuln-type: "os,library"
           format: "table"
           exit-code: "1"
@@ -97,6 +96,17 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4
 
+      - name: set the env variables
+        run: |
+          export IMAGE_TAG=${{ needs.build-docker-image.outputs.image_detail }}
+
+          if [ -z "$IMAGE_TAG" ]; then
+            echo "The image tag is not set "
+            exit 1
+          fi
+
+          echo $IMAGE_TAG
+
       - name: setup kubectl
         uses: azure/setup-kubectl@v3
 
@@ -109,8 +119,12 @@ jobs:
       - name: Preview changes (diff)
         run: kubectl diff -f k8s/ || true
 
+      - name: Update the image tag in the k8s manifests
+        run: |
+          envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
+
       - name: apply the k8s manifests
-        run: kubectl apply --server-side -f k8s/
+        run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
 
       - name: Wait for deployment
         run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
