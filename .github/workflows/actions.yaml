@@ -49,9 +49,9 @@ jobs:
           load: true #  makes image available to 'docker images'
           tags: ${{ env.IMAGE_DETAIL }}
 
-      # check if the image is available locally
-      - name: list the image locally
-        run: docker images
+      # # check if the image is available locally
+      # - name: list the image locally
+      #   run: docker images
 
       # # --- Trivy image scan (fails on High/Critical) ---
       # - name: Trivy scan (image)
@@ -76,15 +76,15 @@ jobs:
       #     ignore-unfixed: true
       #     severity: "HIGH,CRITICAL"
       # Push image to repo only if the scanning is successful
-      - name: Docker push to repository
-        # if: success()
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_DETAIL }}
+      # - name: Docker push to repository
+      #   # if: success()
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: true
+      #     tags: |
+      #       ${{ env.IMAGE_DETAIL }}
 
   deploy-k8s-manifests:
     needs: build-docker-image
