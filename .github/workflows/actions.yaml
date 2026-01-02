@@ -15,7 +15,7 @@ permissions:
 env:
   IMAGE_NAME: nodeapp
   IMAGE_TAG: ${{github.sha}}
-  IMAGE_DETAIL: mniranjanr7/nodeapp:${{ github.sha }}
+  IMAGE_DETAIL: "mniranjanr7/nodeapp:${{ github.sha }}"
 
 jobs:
   build-docker-image:
