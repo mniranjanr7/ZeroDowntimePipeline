@@ -21,7 +21,7 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
-      image_full_path: ${{ steps.version.outputs.image_detail }}
+      image_full_path: ${{ steps.version.outputs.image_details }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
 
       - name: image version
         id: version
-        run: echo "image_detail=${{ env.IMAGE_DETAIL }}" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=${{ env.IMAGE_DETAIL }}" >> "$GITHUB_OUTPUT"
 
       - name: login to docker
         uses: docker/login-action@v3
