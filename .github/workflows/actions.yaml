@@ -86,7 +86,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          echo "image_details=latest" >> "$GITHUB_OUTPUT"
+          echo "image_details=$IMAGE_DETAIL" >> "$GITHUB_OUTPUT"
 
   deploy-k8s-manifests:
     needs: build-docker-image
@@ -104,28 +104,28 @@ jobs:
           echo "image_tag_details -> ${{ needs.build-docker-image.outputs.image_full_path }}"
           test -n "${{ env.image_tag_details }}" || { echo "image_tag_details not set"; }
 
-      - name: setup kubectl
-        uses: azure/setup-kubectl@v3
+      # - name: setup kubectl
+      #   uses: azure/setup-kubectl@v3
 
-      - name: connect to Kubernetes
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{secrets.KUBECONFIG_DATA}}
+      # - name: connect to Kubernetes
+      #   uses: azure/k8s-set-context@v3
+      #   with:
+      #     method: kubeconfig
+      #     kubeconfig: ${{secrets.KUBECONFIG_DATA}}
 
-      - name: Preview changes (diff)
-        run: kubectl diff -f k8s/ || true
+      # - name: Preview changes (diff)
+      #   run: kubectl diff -f k8s/ || true
 
-      - name: Update the image tag in the k8s manifests
-        run: |
-          export IMAGE_DETAIL="${{ env.image_tag_details }}"
-          envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
+      # - name: Update the image tag in the k8s manifests
+      #   run: |
+      #     export IMAGE_DETAIL="${{ env.image_tag_details }}"
+      #     envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
 
-      - name: apply the k8s manifests
-        run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
+      # - name: apply the k8s manifests
+      #   run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
 
-      - name: Wait for deployment
-        run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
+      # - name: Wait for deployment
+      #   run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
 
-      - name: Verify the new image tage is live
-        run: kubectl get deployment nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
+      # - name: Verify the new image tage is live
+      #   run: kubectl get deployment nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
