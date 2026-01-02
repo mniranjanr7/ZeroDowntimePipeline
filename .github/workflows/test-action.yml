@@ -12,7 +12,7 @@ jobs:
       - name: version
         id: version
         run: |
-          echo "image_details=latest" >> "$GITHUB_OUTPUT"
+          echo "image_details=mniranjanr7/nodeapp:${{ github.sha }}" >> "$GITHUB_OUTPUT"
   output:
     needs: inputs
     runs-on: ubuntu-latest
@@ -23,4 +23,4 @@ jobs:
         uses: actions/checkout@v4
       - name: print the image-version from inputs
         run: |
-          echo $image-versions
+          echo "The image version is $image-versions"
