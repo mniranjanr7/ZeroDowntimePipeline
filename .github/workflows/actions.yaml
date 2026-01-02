@@ -86,7 +86,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          echo "image_details=${{ env.IMAGE_DETAIL }}" >> "$GITHUB_OUTPUT"
+          echo "image_details=latest" >> "$GITHUB_OUTPUT"
 
   deploy-k8s-manifests:
     needs: build-docker-image
