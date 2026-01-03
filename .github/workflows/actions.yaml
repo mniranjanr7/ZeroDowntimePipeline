@@ -15,7 +15,7 @@ permissions:
 env:
   IMAGE_NAME: nodeapp
   IMAGE_TAG: ${{github.sha}}
-  IMAGE_DETAIL: "mniranjanr7/nodeapp:${{ github.sha }}"
+  IMAGE_DETAIL: "nodeapp:${{ github.sha }}"
 
 jobs:
   build-docker-image:
@@ -28,7 +28,7 @@ jobs:
 
       - name: image version
         id: version
-        run: echo "image_details=nodeapp:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+        run: echo "image_details=${IMAGE_DETAIL}" >> "$GITHUB_OUTPUT"
 
       - name: docker build setup
         uses: docker/setup-buildx-action@v3
@@ -39,52 +39,52 @@ jobs:
           username: ${{secrets.DOCKER_USERNAME}}
           password: ${{secrets.DOCKER_PASSWORD}}
 
-      # # build image locally but not push until the scanning is success
-      # - name: Docker push to repository
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     push: false
-      #     load: true #  makes image available to 'docker images'
-      #     tags: ${{ env.IMAGE_DETAIL }}
+      # build image locally but not push until the scanning is success
+      - name: Docker push to repository
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true #  makes image available to 'docker images'
+          tags: ${{ env.IMAGE_DETAIL }}
 
-      # # check if the image is available locally
-      # - name: list the image locally
-      #   run: docker images
+      # check if the image is available locally
+      - name: list the image locally
+        run: docker images
 
-      # # --- Trivy image scan (fails on High/Critical) ---
-      # - name: Trivy scan (image)
-      #   uses: aquasecurity/trivy-action@0.20.0
-      #   with:
-      #     image-ref: ${{ env.IMAGE_DETAIL }}
-      #     vuln-type: "os,library"
-      #     format: "table"
-      #     exit-code: "1"
-      #     ignore-unfixed: true
-      #     severity: "HIGH,CRITICAL"
+      # --- Trivy image scan (fails on High/Critical) ---
+      - name: Trivy scan (image)
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ env.IMAGE_DETAIL }}
+          vuln-type: "os,library"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "HIGH,CRITICAL"
 
-      # # --- Trivy filesystem scan (source) ---
-      # - name: Trivy scan (filesystem)
-      #   uses: aquasecurity/trivy-action@0.20.0
-      #   with:
-      #     scan-type: fs
-      #     path: .
-      #     format: table
-      #     vuln-type: "os,library"
-      #     exit-code: "1"
-      #     ignore-unfixed: true
-      #     severity: "HIGH,CRITICAL"
-      # Push image to repo only if the scanning is successful
-      # - name: Docker push to repository
-      #   # if: success()
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     push: true
-      #     tags: |
-      #       ${{ env.IMAGE_DETAIL }}
+      # --- Trivy filesystem scan (source) ---
+      - name: Trivy scan (filesystem)
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: fs
+          path: .
+          format: table
+          vuln-type: "os,library"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "HIGH,CRITICAL"
+
+      #Push image to repo only if the scanning is successful
+      - name: Docker push to repository
+        # if: success()
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: mniranjanr7/${{ env.IMAGE_DETAIL }}
 
   deploy-k8s-manifests:
     needs: build-docker-image
@@ -103,28 +103,27 @@ jobs:
           echo "image_tag_details -> ${{ needs.build-docker-image.outputs.imagefullpath }}"
           test -n "${image_tag_details}" || { echo "image_tag_details not set"; exit 1 ; }
 
-      # - name: setup kubectl
-      #   uses: azure/setup-kubectl@v3
+      - name: setup kubectl
+        uses: azure/setup-kubectl@v3
 
-      # - name: connect to Kubernetes
-      #   uses: azure/k8s-set-context@v3
-      #   with:
-      #     method: kubeconfig
-      #     kubeconfig: ${{secrets.KUBECONFIG_DATA}}
+      - name: connect to Kubernetes
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{secrets.KUBECONFIG_DATA}}
 
-      # - name: Preview changes (diff)
-      #   run: kubectl diff -f k8s/ || true
+      - name: Preview changes (diff)
+        run: kubectl diff -f k8s/ || true
 
-      # - name: Update the image tag in the k8s manifests
-      #   run: |
-      #     export IMAGE_DETAIL="${{ env.image_tag_details }}"
-      #     envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
+      - name: Update the image tag in the k8s manifests
+        run: |
+          envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
 
-      # - name: apply the k8s manifests
-      #   run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
+      - name: apply the k8s manifests
+        run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
 
-      # - name: Wait for deployment
-      #   run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
+      - name: Wait for deployment
+        run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
 
-      # - name: Verify the new image tage is live
-      #   run: kubectl get deployment nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
+      - name: Verify the new image tage is live
+        run: kubectl get deployment nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
