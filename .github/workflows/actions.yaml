@@ -126,4 +126,4 @@ jobs:
         run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
 
       - name: Verify the new image tage is live
-        run: kubectl get deployment nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
+        run: kubectl get deployment nginx -n pyro-dev -o jsonpath='{.spec.template.spec.containers[0].image}'
