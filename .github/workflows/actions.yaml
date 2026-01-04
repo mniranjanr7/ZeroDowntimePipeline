@@ -123,7 +123,20 @@ jobs:
         run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
 
       - name: Wait for deployment
-        run: kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s
+        run: |
+          if ! kubectl rollout status deployment/nginx -n pyro-dev --timeout=180s; then
+            echo "❌ Deployment failed! New pods are not ready (Readiness Probe failed)."
+
+            echo "Triggerring automatic rollback"
+            kubectl rollout undo deployment/nginx -n pyro-dev
+
+            echo "⏳ Waiting for rollback to stabilize..."
+            kubectl rollout status deployment/nginx -n pyro-dev --timeout=60s
+
+            echo "Rollback complete"
+            exit 1;
+          fi
+          echo "Deployment completed and verified"
 
       - name: Verify the new image tage is live
         run: kubectl get deployment nginx -n pyro-dev -o jsonpath='{.spec.template.spec.containers[0].image}'
