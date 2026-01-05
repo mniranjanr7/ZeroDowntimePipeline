@@ -120,7 +120,7 @@ jobs:
           envsubst < k8s/deployment-nginx.yaml > k8s/final-deployment-nginx.yaml
 
       - name: apply the k8s manifests
-        run: kubectl apply --server-side -f k8s/final-deployment-nginx.yaml
+        run: kubectl apply --server-side --force-conflicts -f k8s/final-deployment-nginx.yaml
 
       - name: Wait for deployment
         run: |
