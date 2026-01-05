@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdir -p build && echo 'Hello World' > build/index.html"
+    "build": "mkdir -p build && echo 'Beetroot with chia seeds: A natural superfood combo for heart and gut health. The Times of India Some food pairings don’t shout for attention, they just quietly work. Beetroot and chia seeds are one of those rare combinations that feel both ancient and modern, earthy and light. Beetroot, dense with nitrates and natural sugars, feeds your heart by improving blood flow and lowering pressure. Chia, rich in omega-3s, fibre, and plant protein, supports digestion and steady energy. One roots you, the other lifts you. Together, they form a kind of everyday balance, colour and calm in a bowl, strength without heaviness. Scroll down to see how this simple duo works harder than it looks.' > build/index.html"
   },
   "repository": {
     "type": "git",
